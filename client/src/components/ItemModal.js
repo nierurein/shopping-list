@@ -21,7 +21,7 @@ class ItemModal extends React.Component {
 
   state = {
     modal: false,
-    item: ''
+    name: ''
   }
 
   toggle = () => {
@@ -37,7 +37,7 @@ class ItemModal extends React.Component {
   onSubmit = (e) => {
     e.preventDefault();
     const newItem = {
-      name: this.state.item
+      name: this.state.name
     }
     
     // call addItem action
