@@ -64,7 +64,7 @@ class AppNavbar extends React.Component {
             <NavbarBrand href='/'>Shopping List</NavbarBrand>
             <NavbarToggler onClick={this.toggle} />
             <Collapse isOpen={this.state.isOpen} navbar>
-              <Nav className='ml-auto' navbar>
+              <Nav className='ms-auto' navbar>
                 {isAuthenticated ?
                   authLinks :
                   guestLinks
