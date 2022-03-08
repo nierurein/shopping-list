@@ -8,10 +8,13 @@ import {
   FormGroup,
   Label,
   Input,
-  NavLink
+  NavLink,
+  Alert
 } from 'reactstrap';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import {register} from '../../actions/authActions';
+import {clearErrors} from '../../actions/errorActions';
 
 class RegisterModal extends React.Component {
   constructor(props) {
@@ -30,10 +33,14 @@ class RegisterModal extends React.Component {
 
   static propTypes = {
     isAuthenticated: PropTypes.bool,
-    errorReducer: PropTypes.object.isRequired
+    errorReducer: PropTypes.object.isRequired,
+    register: PropTypes.func.isRequired,
+    clearErrors: PropTypes.func.isRequired
   }
 
   toggle = () => {
+    // Clear errors
+    this.props.clearErrors();
     this.setState({
       modal: !this.state.modal
     });
@@ -46,8 +53,36 @@ class RegisterModal extends React.Component {
   onSubmit = (e) => {
     e.preventDefault();
 
-    // close modal
-    this.toggle();
+    const {name, email, password} = this.state;
+
+    // Create user object
+    const newUser = {
+      name, email, password
+    };
+
+    // Attempt register
+    this.props.register(newUser);
+  }
+
+  componentDidUpdate(prevProps) {
+    const {errorReducer, isAuthenticated} = this.props;
+    if(errorReducer !== prevProps.errorReducer) {
+      // Check for register error
+      if(errorReducer.id === 'REGISTER_FAIL') {
+        this.setState({
+          msg: errorReducer.msg.msg
+        });
+      } else {
+        this.setState({msg: null});
+      }
+    }
+
+    // If authenticated close modal
+    if(this.state.modal) {
+      if(isAuthenticated) {
+        this.toggle();
+      }
+    }
   }
 
   render() {
@@ -63,6 +98,7 @@ class RegisterModal extends React.Component {
         >
           <ModalHeader toggle={this.toggle}>Register</ModalHeader>
           <ModalBody>
+            {this.state.msg ? <Alert color="danger">{this.state.msg}</Alert>: null}
             <Form onSubmit={this.onSubmit}>
               <FormGroup>
                 <Label for='name'>Name</Label>
@@ -115,4 +151,4 @@ const mapStateToProps = (state) => ({
   errorReducer: state.errorReducer
 });
 
-export default connect(mapStateToProps, {})(RegisterModal);
+export default connect(mapStateToProps, {register, clearErrors})(RegisterModal);
