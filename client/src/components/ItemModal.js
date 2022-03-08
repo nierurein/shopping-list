@@ -39,6 +39,8 @@ class ItemModal extends React.Component {
     const newItem = {
       name: this.state.name
     }
+
+    console.log(newItem);
     
     // call addItem action
     this.props.addItem(newItem);
@@ -67,8 +69,8 @@ class ItemModal extends React.Component {
                 <Label for='item'>Item</Label>
                 <Input
                   type="text"
-                  name='item'
-                  id='item'
+                  name='name'
+                  id='name'
                   placeholder="Add shopping item"
                   onChange={this.onChange}
                 />
