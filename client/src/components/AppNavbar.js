@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
   Navbar,
   NavItem,
@@ -12,10 +12,16 @@ import {
 import RegisterModal from './auth/RegisterModal';
 import Logout from './auth/Logout';
 import LoginModal from './auth/LoginModal';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types'
 
 class AppNavbar extends React.Component {
   state = {
     isOpen: false
+  }
+
+  static propTypes = {
+    authReducer: PropTypes.object.isRequired  
   }
 
   toggle = () => {
@@ -25,6 +31,32 @@ class AppNavbar extends React.Component {
   }
 
   render() {
+    const {isAuthenticated, user} = this.props.authReducer;
+
+    const authLinks = (
+      <Fragment>
+        <NavItem>
+          <span className='navbar-text mr-3'>
+            <strong>{user ? `Welcome ${user.name}`: ''}</strong>
+          </span>
+        </NavItem>
+        <NavItem>
+          <Logout />
+        </NavItem>
+      </Fragment>
+    );
+
+    const guestLinks = (
+      <Fragment>
+        <NavItem>
+          <RegisterModal />
+        </NavItem>
+        <NavItem>
+          <LoginModal />
+        </NavItem>
+      </Fragment>
+    );
+
     return(
       <div>
         <Navbar color='dark' dark expand='sm' className='mb-5'>
@@ -33,15 +65,10 @@ class AppNavbar extends React.Component {
             <NavbarToggler onClick={this.toggle} />
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className='ml-auto' navbar>
-                <NavItem>
-                  <RegisterModal />
-                </NavItem>
-                <NavItem>
-                  <LoginModal />
-                </NavItem>
-                <NavItem>
-                  <Logout />
-                </NavItem>
+                {isAuthenticated ?
+                  authLinks :
+                  guestLinks
+                }
               </Nav>
             </Collapse>
           </Container>
@@ -51,6 +78,8 @@ class AppNavbar extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  authReducer: state.authReducer
+})
 
-
-export default AppNavbar;
+export default connect(mapStateToProps, {})(AppNavbar);
